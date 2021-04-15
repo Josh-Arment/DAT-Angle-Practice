@@ -45,9 +45,9 @@ def visualize():
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     
     form = Form()
-
-    return render_template('game_play.html', form=form)
-    # return f"<img src='data:image/png;base64,{data}'/>"
+    
+    # return render_template('game_play.html', form=form)
+    return f"<img src='data:image/png;base64,{data}'/>"
 
 
 def test(angles):
