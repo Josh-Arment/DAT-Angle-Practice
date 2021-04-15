@@ -1,8 +1,7 @@
 ---
 deployment:
   tasks:
-    - source /home/datangle/virtualenv/mypythonapp/3.7/bin/activate && cd /home/datangle/mypythonapp
-    - export DEPLOYPATH=/home/datangle/mypythonapp/
+    - export DEPLOYPATH=/home/datangle/pythonapp/
     - /bin/cp -R static $DEPLOYPATH
     - /bin/cp -R templates $DEPLOYPATH
     - /bin/cp app.py $DEPLOYPATH
