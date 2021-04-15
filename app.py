@@ -5,13 +5,15 @@ import math
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+from flask_wtf import FlaskForm
+from wtforms import SelectField
 
 from matplotlib.figure import Figure
 
 TOLERANCE = 30
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = 'leroyJenkins'
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -23,7 +25,7 @@ def send():
         TOLERANCE = variance_input
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
-@app.route('/visualize')
+@app.route('/visualize', methods=['GET', 'POST'])
 def visualize():
 
     fig = Figure()
@@ -41,7 +43,11 @@ def visualize():
     buf = test(test_angles)
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    return f"<img src='data:image/png;base64,{data}'/>"
+    
+    form = Form()
+
+    return render_template('game_play.html', form=form)
+    # return f"<img src='data:image/png;base64,{data}'/>"
 
 
 def test(angles):
@@ -103,6 +109,9 @@ def test(angles):
     buf = BytesIO()
     fig.savefig(buf, format="png")
     return buf
+
+class Form(FlaskForm):
+    smallest = SelectField('smallest', choices=[('1'), ('2'), ('3'), ('4')])
 
 
 if __name__ == "__main__":
