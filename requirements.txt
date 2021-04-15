@@ -1,7 +1,5 @@
 flask
 numpy
 matplotlib
-base64
-io
 flask_wtf
 wtforms
