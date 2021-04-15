@@ -20,7 +20,7 @@ def index():
     return render_template('index.html')
 
 # Where to input the angle differential
-@app.route('/send', methods=['GET', 'POST'])
+@app.route('/home/send', methods=['GET', 'POST'])
 def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
