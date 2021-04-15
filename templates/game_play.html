@@ -7,11 +7,22 @@
     <title>Document</title>
 </head>
 <body>
-    <!-- <img src='data:image/png;base64,{{data}}'/> -->
+    <img src="data:image/png;base64,{{ plots }}"/>
     <br>
-    <form method="POST">
+    
+    <form action = "/home/results" method="POST">
+        Which angle is smallest? Angle: 
         {{form.smallest}}
-        <input type="submit">
+        <br>
+        Which angle is second smallest? Angle:
+        {{form.second_smallest}}
+        <br>
+        Which angle is second largest? Angle: 
+        {{form.third_smallest}}
+        <br>
+        Which angle is largest? Angle:
+        {{form.largest}}
+        <br><input  type="submit">
     </form>
 </body>
 </html>
