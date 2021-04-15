@@ -1,6 +1,5 @@
 flask
 numpy
-random
 math
 matplotlib
 base64
