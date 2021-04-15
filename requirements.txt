@@ -1,6 +1,5 @@
 flask
 numpy
-math
 matplotlib
 base64
 io
