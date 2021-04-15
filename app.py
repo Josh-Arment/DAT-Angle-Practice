@@ -29,7 +29,7 @@ def send():
     return render_template('user_input.html')
 
 # The Plot Page
-@app.route('/home/visualize', methods=['GET', 'POST'])
+@app.route('/visualize', methods=['GET', 'POST'])
 def visualize():
     
     fig = Figure()
@@ -59,7 +59,7 @@ def visualize():
     return render_template('game_play.html', form=form, plots = data)
     # return f"<img src='data:image/png;base64,{data}'/>"
 
-@app.route('/home/results', methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 def results():
 
     if request.method == 'POST':
