@@ -1,0 +1,9 @@
+flask
+numpy
+random
+math
+matplotlib
+base64
+io
+flask_wtf
+wtforms
