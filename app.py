@@ -11,8 +11,8 @@ import json
 
 from matplotlib.figure import Figure
 
-TOLERANCE = 30
-END_ANSWERS= ['1','2','3','4']
+# TOLERANCE = 30
+# END_ANSWERS= ['1','2','3','4']
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'leroyJenkins'
@@ -28,21 +28,15 @@ def send():
 
         TOLERANCE = variance_input
         session['tolerance'] = variance_input
-        print('Session type:', type(session['tolerance']))
+
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
 
 # The Plot Page
 @app.route('/visualize', methods=['GET', 'POST'])
 def visualize():
-
-    print('TOLERANCE:', session['tolerance'])
-
-    TOLERANCE = (json.dumps(session['tolerance']))
-    TOLERANCE = TOLERANCE.replace('"', '')
-    print('dumping:', TOLERANCE)
-    TOLERANCE = int(TOLERANCE)
-    print('POST dumping:', TOLERANCE)
+    TOLERANCE = int(session['tolerance'])
+    
 
     fig = Figure()
     ax = fig.subplots()
@@ -59,33 +53,37 @@ def visualize():
     answers = np.empty_like(temp)
     answers[temp] = np.arange(len(test_angles)) + 1
     answers = list(answers)
-    END_ANSWERS = answers
-    session['end_answers'] = answers
+
+
+    print()
+    session['answer1'] = str(answers[0])
+    session['answer2'] = str(answers[1])
+    session['answer3'] = str(answers[2])
+    session['answer4'] = str(answers[3])
 
     buf = test(test_angles)
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     
     form = Form()
-
+    
     return render_template('game_play.html', form=form, plots = data)
-    # return f"<img src='data:image/png;base64,{data}'/>"
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
 
     if request.method == 'POST':
         userAnswers = request.form
-        # TOLERANCE = variance_input
+
         smallest = userAnswers['smallest']
         second_smallest = userAnswers['second_smallest']
         third_smallest = userAnswers['third_smallest']
         largest = userAnswers['largest']
         userAnswers = [smallest, second_smallest, third_smallest, largest]
 
-        print(userAnswers)
-        END_ANSWERS = session['end_answers']
-        print(END_ANSWERS)
+        print('Users answers:', userAnswers)
+        END_ANSWERS = [session['answer1'], session['answer2'], session['answer3'], session['answer4']] 
+        print('Correct Answers:', END_ANSWERS)
 
         if userAnswers == END_ANSWERS:
             return f'<h1>Correct!</h1>'
