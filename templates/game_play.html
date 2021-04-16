@@ -7,16 +7,15 @@
     <title>Document</title>
 </head>
 <body>
-    <img src="data:image/png;base64,{{ plots }}"/>
+    <!---<img src="data:image/png;base64,{{ plots }}"/>-->
+    <img src="static/tmp{{tmpID}}.png"/>
     <br>
     
     <form method="POST">
-        {{form.smallest}} &lt {{form.second_smallest}} &lt {{form.third_smallest}} &lt {{form.largest}}
+        {{form.smallest}} &lt {{form.secondSmallest}} &lt {{form.secondLargest}} &lt {{form.largest}}
         <br><input  type="submit">
         <br>
         <b>{{result}}</b>
-    </form>
-    
-    
+    </form>   
 </body>
 </html>

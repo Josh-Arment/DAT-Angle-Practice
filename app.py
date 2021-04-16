@@ -7,12 +7,10 @@ import base64
 from io import BytesIO
 from flask_wtf import FlaskForm
 from wtforms import SelectField
+import uuid
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'leroyJenkins'
-#@app.route('/')
-#def index():
-#    return render_template('index.html')
 
 # Where to input the angle differential
 @app.route('/', methods=['GET', 'POST'])
@@ -20,87 +18,90 @@ def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
         session['tolerance'] = variance_input
-        session.modified = True
-        session['started'] = 'yes'
-
+        session['plot_exists'] = None
         return redirect(url_for('visualize'))
+    
     return render_template('user_input.html')
 
 # The Plot Page
 @app.route('/visualize', methods=['GET', 'POST'])
-def visualize():
+def visualize():  
     resultOutput = 'Push Submit to check answer'
-    if request.method == 'POST':
+    
+    if request.method == 'POST':        
         userAnswers = request.form
 
-        smallest = userAnswers['smallest']
-        second_smallest = userAnswers['second_smallest']
-        third_smallest = userAnswers['third_smallest']
-        largest = userAnswers['largest']
-        userAnswers = [smallest, second_smallest, third_smallest, largest]
+        userAnswer = [0,0,0,0]
+        smallest = int(userAnswers['smallest'])
+        userAnswer[smallest-1] = 1
+        secondSmallest = int(userAnswers['secondSmallest'])
+        userAnswer[secondSmallest-1] = 2
+        secondLargest = int(userAnswers['secondLargest'])
+        userAnswer[secondLargest-1] = 3
+        largest = int(userAnswers['largest'])
+        userAnswer[largest-1] = 4
+        
+        answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
 
-        print('Users answers:', userAnswers)
-        END_ANSWERS = [session['answer1'], session['answer2'], session['answer3'], session['answer4']] 
-        print('Correct Answers:', END_ANSWERS)
-
-        if userAnswers == END_ANSWERS:
-            resultOutput = 'Correct'
+        if userAnswer == answer:
+            resultOutput = 'Correct!'
         else:
-            resultOutput = 'Wrong!, correct answer was: '+END_ANSWERS[0] + '<' +END_ANSWERS[1] + '<' +END_ANSWERS[2] + '<'+END_ANSWERS[3]  
-    TOLERANCE = int(session['tolerance'])
+            resultOutput = 'Wrong... {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
     
-    base_angle = random.randint(40,150 - 3 * TOLERANCE)
+    if session['plot_exists'] == None:
+        TOLERANCE = int(session['tolerance'])
+        
+        base_angle = random.randint(40, 150 - 3 * TOLERANCE)
+        
+        test_angles = [base_angle,
+                       base_angle + 1 * TOLERANCE,
+                       base_angle + 2 * TOLERANCE,
+                       base_angle + 3 * TOLERANCE]
+        
+        random.shuffle(test_angles)
     
-    test_angles = [base_angle,
-                   base_angle + 1 * TOLERANCE,
-                   base_angle + 2 * TOLERANCE,
-                   base_angle + 3 * TOLERANCE]
+        buf = test(test_angles)
+        
+        temp = np.argsort(test_angles)
+        answers = np.empty_like(temp)
+        answers[temp] = np.arange(len(test_angles)) + 1
+        answers = list(answers)
+        
+        session['smallest'] = str(answers[0])
+        session['secondSmallest'] = str(answers[1])
+        session['secondLargest'] = str(answers[2])
+        session['largest'] = str(answers[3])
+        
+        # Embed the result in the html output.
+        data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        
+        session['plot_exists'] = 'yip!'
+        
+    form = Form()    
     
-    random.shuffle(test_angles)
-
-    buf = test(test_angles)
-    
-    temp = np.argsort(test_angles)
-    answers = np.empty_like(temp)
-    answers[temp] = np.arange(len(test_angles)) + 1
-    answers = list(answers)
-
-    session['answer1'] = str(answers[0])
-    session.modified = True
-    session['answer2'] = str(answers[1])
-    session.modified = True
-    session['answer3'] = str(answers[2])
-    session.modified = True
-    session['answer4'] = str(answers[3])
-    session.modified = True
-    
-    # Embed the result in the html output.
-    data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    
-    form = Form()
-    
-    
-    return render_template('game_play.html', form=form, plots = data, result = resultOutput)
+    return render_template('game_play.html', form=form, result = resultOutput, tmpID = session['id'])
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
-    if request.method == 'POST':
+    if request.method == 'POST':        
         userAnswers = request.form
 
-        smallest = userAnswers['smallest']
-        second_smallest = userAnswers['second_smallest']
-        third_smallest = userAnswers['third_smallest']
-        largest = userAnswers['largest']
-        userAnswers = [smallest, second_smallest, third_smallest, largest]
+        userAnswer = [0,0,0,0]
+        smallest = int(userAnswers['smallest'])
+        userAnswer[smallest-1] = 1
+        secondSmallest = int(userAnswers['secondSmallest'])
+        userAnswer[secondSmallest-1] = 2
+        secondLargest = int(userAnswers['secondLargest'])
+        userAnswer[secondLargest-1] = 3
+        largest = int(userAnswers['largest'])
+        userAnswer[largest-1] = 4
+        
+        answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
 
-        print('Users answers:', userAnswers)
-        END_ANSWERS = [session['answer1'], session['answer2'], session['answer3'], session['answer4']] 
-        print('Correct Answers:', END_ANSWERS)
-
-        if userAnswers == END_ANSWERS:
+        if userAnswer == answer:
             return f'<h1>Correct!</h1>'
         else:
-            return f'<h1>Wrong!<br>{END_ANSWERS[0]}</h1><br><h1>{END_ANSWERS[1]}</h1><br><h1>{END_ANSWERS[2]}</h1><br><h1>{END_ANSWERS[3]}</h1>'
+            return f'<h1>Wrong...<br>{np.where(np.array(answer) == 1)[0][0] + 1}&lt{np.where(np.array(answer) == 2)[0][0] + 1}&lt{np.where(np.array(answer) == 3)[0][0] + 1}&lt{np.where(np.array(answer) == 4)[0][0] + 1}</h1>'
     else:
         return f'<h1>Loading</h1>'
 
@@ -162,12 +163,15 @@ def test(angles):
     # plt.show(block=False)
     buf = BytesIO()
     fig.savefig(buf, format="png")
+    
+    session['id'] = str(uuid.uuid4())[:8]
+    plt.savefig('static/tmp' + session['id'] + '.png')
     return buf
 
 class Form(FlaskForm):
     smallest = SelectField('smallest', choices=[('1'), ('2'), ('3'), ('4')], default = 1)
-    second_smallest = SelectField('secondsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 2)
-    third_smallest = SelectField('thirdsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 3)
+    secondSmallest = SelectField('secondSmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 2)
+    secondLargest = SelectField('secondLargest', choices=[('1'), ('2'), ('3'), ('4')], default = 3)
     largest = SelectField('largest', choices=[('1'), ('2'), ('3'), ('4')], default = 4)
     
 
