@@ -13,12 +13,12 @@ from wtforms import SelectField
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'leroyJenkins'
-@app.route('/')
-def index():
-    return render_template('index.html')
+#@app.route('/')
+#def index():
+#    return render_template('index.html')
 
 # Where to input the angle differential
-@app.route('/send', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
