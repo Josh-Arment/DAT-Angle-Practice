@@ -28,26 +28,35 @@ def send():
 def visualize():  
     resultOutput = 'Push Submit to check answer'
     
-    if request.method == 'POST':        
-        userAnswers = request.form
+    if request.method == 'POST':
+        print(request)
+        if 'Submit!' in request.form:
+                        
+            userAnswers = request.form
 
-        userAnswer = [0,0,0,0]
-        smallest = int(userAnswers['smallest'])
-        userAnswer[smallest-1] = 1
-        secondSmallest = int(userAnswers['secondSmallest'])
-        userAnswer[secondSmallest-1] = 2
-        secondLargest = int(userAnswers['secondLargest'])
-        userAnswer[secondLargest-1] = 3
-        largest = int(userAnswers['largest'])
-        userAnswer[largest-1] = 4
-        
-        answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
+            userAnswer = [0,0,0,0]
+            smallest = int(userAnswers['smallest'])
+            userAnswer[smallest-1] = 1
+            secondSmallest = int(userAnswers['secondSmallest'])
+            userAnswer[secondSmallest-1] = 2
+            secondLargest = int(userAnswers['secondLargest'])
+            userAnswer[secondLargest-1] = 3
+            largest = int(userAnswers['largest'])
+            userAnswer[largest-1] = 4
+            
+            answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
 
-        if userAnswer == answer:
-            resultOutput = 'Correct!'
-        else:
-            resultOutput = 'Wrong... {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
-    
+            if userAnswer == answer:
+                resultOutput = 'Correct!'
+            else:
+                resultOutput = 'Wrong... {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
+        elif "Change Angle Difference" in request.form:
+            session.clear()
+            return redirect(url_for('send'))
+
+        elif "Play Again (Same Angle Difference)" in request.form:
+            session['plot_exists'] = None
+
     if session['plot_exists'] == None:
         TOLERANCE = int(session['tolerance'])
         
@@ -80,30 +89,6 @@ def visualize():
     form = Form()    
     
     return render_template('game_play.html', form=form, result = resultOutput, tmpID = session['id'])
-
-@app.route('/results', methods=['GET', 'POST'])
-def results():
-    if request.method == 'POST':        
-        userAnswers = request.form
-
-        userAnswer = [0,0,0,0]
-        smallest = int(userAnswers['smallest'])
-        userAnswer[smallest-1] = 1
-        secondSmallest = int(userAnswers['secondSmallest'])
-        userAnswer[secondSmallest-1] = 2
-        secondLargest = int(userAnswers['secondLargest'])
-        userAnswer[secondLargest-1] = 3
-        largest = int(userAnswers['largest'])
-        userAnswer[largest-1] = 4
-        
-        answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
-
-        if userAnswer == answer:
-            return f'<h1>Correct!</h1>'
-        else:
-            return f'<h1>Wrong...<br>{np.where(np.array(answer) == 1)[0][0] + 1}&lt{np.where(np.array(answer) == 2)[0][0] + 1}&lt{np.where(np.array(answer) == 3)[0][0] + 1}&lt{np.where(np.array(answer) == 4)[0][0] + 1}</h1>'
-    else:
-        return f'<h1>Loading</h1>'
 
 def test(angles):
     # unpack and create angles
