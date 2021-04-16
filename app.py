@@ -20,6 +20,7 @@ def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
         session['tolerance'] = variance_input
+        session.modified = True
 
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
@@ -46,9 +47,13 @@ def visualize():
     answers = list(answers)
 
     session['answer1'] = str(answers[0])
+    session.modified = True
     session['answer2'] = str(answers[1])
+    session.modified = True
     session['answer3'] = str(answers[2])
+    session.modified = True
     session['answer4'] = str(answers[3])
+    session.modified = True
     
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
