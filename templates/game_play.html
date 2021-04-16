@@ -10,15 +10,13 @@
     <img src="data:image/png;base64,{{ plots }}"/>
     <br>
     
-    <form action = "/results" method="POST">
-        Angle {{form.smallest}} is the smallest.
-        <br>
-        Angle {{form.second_smallest}} is the second smallest.        
-        <br>
-        Angle {{form.third_smallest}} is the second largest. 
-        <br>
-        Angle {{form.largest}} is the largest.
+    <form method="POST">
+        {{form.smallest}} &lt {{form.second_smallest}} &lt {{form.third_smallest}} &lt {{form.largest}}
         <br><input  type="submit">
+        <br>
+        <b>{{result}}</b>
     </form>
+    
+    
 </body>
 </html>

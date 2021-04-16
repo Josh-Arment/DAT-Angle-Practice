@@ -21,6 +21,7 @@ def send():
         variance_input = request.form['variance']
         session['tolerance'] = variance_input
         session.modified = True
+        session['started'] = 'yes'
 
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
@@ -28,6 +29,24 @@ def send():
 # The Plot Page
 @app.route('/visualize', methods=['GET', 'POST'])
 def visualize():
+    resultOutput = 'Push Submit to check answer'
+    if request.method == 'POST':
+        userAnswers = request.form
+
+        smallest = userAnswers['smallest']
+        second_smallest = userAnswers['second_smallest']
+        third_smallest = userAnswers['third_smallest']
+        largest = userAnswers['largest']
+        userAnswers = [smallest, second_smallest, third_smallest, largest]
+
+        print('Users answers:', userAnswers)
+        END_ANSWERS = [session['answer1'], session['answer2'], session['answer3'], session['answer4']] 
+        print('Correct Answers:', END_ANSWERS)
+
+        if userAnswers == END_ANSWERS:
+            resultOutput = 'Correct'
+        else:
+            resultOutput = 'Wrong!, correct answer was: '+END_ANSWERS[0] + '<' +END_ANSWERS[1] + '<' +END_ANSWERS[2] + '<'+END_ANSWERS[3]  
     TOLERANCE = int(session['tolerance'])
     
     base_angle = random.randint(40,150 - 3 * TOLERANCE)
@@ -60,7 +79,8 @@ def visualize():
     
     form = Form()
     
-    return render_template('game_play.html', form=form, plots = data)
+    
+    return render_template('game_play.html', form=form, plots = data, result = resultOutput)
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
@@ -149,6 +169,7 @@ class Form(FlaskForm):
     second_smallest = SelectField('secondsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 2)
     third_smallest = SelectField('thirdsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 3)
     largest = SelectField('largest', choices=[('1'), ('2'), ('3'), ('4')], default = 4)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
