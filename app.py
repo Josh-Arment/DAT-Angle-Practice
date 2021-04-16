@@ -29,7 +29,8 @@ def send():
         TOLERANCE = variance_input
         session['tolerance'] = variance_input
 
-        return redirect(url_for('visualize', _external = True))
+        #return redirect(url_for('visualize', _external = True))
+        return f'<h1>Work, pls</h1>'
     return render_template('user_input.html')
 
 # The Plot Page
