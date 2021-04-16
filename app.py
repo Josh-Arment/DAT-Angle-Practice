@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, url_for, request
+from flask import Flask, redirect, render_template, url_for, request, session
 import numpy as np
 import random
 import math
@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 from flask_wtf import FlaskForm
 from wtforms import SelectField
+import json
 
 from matplotlib.figure import Figure
 
@@ -20,21 +21,31 @@ def index():
     return render_template('index.html')
 
 # Where to input the angle differential
-@app.route('/home/send', methods=['GET', 'POST'])
+@app.route('/send', methods=['GET', 'POST'])
 def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
+
         TOLERANCE = variance_input
+        session['tolerance'] = variance_input
+        print('Session type:', type(session['tolerance']))
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
 
 # The Plot Page
-@app.route('/home/visualize', methods=['GET', 'POST'])
+@app.route('/visualize', methods=['GET', 'POST'])
 def visualize():
-    
+
+    print('TOLERANCE:', session['tolerance'])
+
+    TOLERANCE = (json.dumps(session['tolerance']))
+    TOLERANCE = TOLERANCE.replace('"', '')
+    print('dumping:', TOLERANCE)
+    TOLERANCE = int(TOLERANCE)
+    print('POST dumping:', TOLERANCE)
+
     fig = Figure()
     ax = fig.subplots()
-    
     base_angle = random.randint(40,150 - 3 * TOLERANCE)
     
     test_angles = [base_angle,
@@ -49,6 +60,7 @@ def visualize():
     answers[temp] = np.arange(len(test_angles)) + 1
     answers = list(answers)
     END_ANSWERS = answers
+    session['end_answers'] = answers
 
     buf = test(test_angles)
     # Embed the result in the html output.
@@ -59,7 +71,7 @@ def visualize():
     return render_template('game_play.html', form=form, plots = data)
     # return f"<img src='data:image/png;base64,{data}'/>"
 
-@app.route('/home/results', methods=['GET', 'POST'])
+@app.route('/results', methods=['GET', 'POST'])
 def results():
 
     if request.method == 'POST':
@@ -72,6 +84,7 @@ def results():
         userAnswers = [smallest, second_smallest, third_smallest, largest]
 
         print(userAnswers)
+        END_ANSWERS = session['end_answers']
         print(END_ANSWERS)
 
         if userAnswers == END_ANSWERS:
