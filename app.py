@@ -8,9 +8,6 @@ from io import BytesIO
 from flask_wtf import FlaskForm
 from wtforms import SelectField
 
-# TOLERANCE = 30
-# END_ANSWERS= ['1','2','3','4']
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'leroyJenkins'
 #@app.route('/')
@@ -26,7 +23,6 @@ def send():
 
         return redirect(url_for('visualize'))
     return render_template('user_input.html')
-    
 
 # The Plot Page
 @app.route('/visualize', methods=['GET', 'POST'])
@@ -42,18 +38,18 @@ def visualize():
     
     random.shuffle(test_angles)
 
+    buf = test(test_angles)
+    
     temp = np.argsort(test_angles)
     answers = np.empty_like(temp)
     answers[temp] = np.arange(len(test_angles)) + 1
     answers = list(answers)
 
-    print()
     session['answer1'] = str(answers[0])
     session['answer2'] = str(answers[1])
     session['answer3'] = str(answers[2])
     session['answer4'] = str(answers[3])
-
-    buf = test(test_angles)
+    
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     
@@ -63,7 +59,6 @@ def visualize():
 
 @app.route('/results', methods=['GET', 'POST'])
 def results():
-
     if request.method == 'POST':
         userAnswers = request.form
 
@@ -149,7 +144,6 @@ class Form(FlaskForm):
     second_smallest = SelectField('secondsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 2)
     third_smallest = SelectField('thirdsmallest', choices=[('1'), ('2'), ('3'), ('4')], default = 3)
     largest = SelectField('largest', choices=[('1'), ('2'), ('3'), ('4')], default = 4)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
