@@ -7,9 +7,6 @@ import base64
 from io import BytesIO
 from flask_wtf import FlaskForm
 from wtforms import SelectField
-import json
-
-from matplotlib.figure import Figure
 
 # TOLERANCE = 30
 # END_ANSWERS= ['1','2','3','4']
@@ -25,8 +22,6 @@ def index():
 def send():
     if request.method == 'POST':
         variance_input = request.form['variance']
-
-        TOLERANCE = variance_input
         session['tolerance'] = variance_input
 
         return redirect(url_for('visualize'))
@@ -38,9 +33,6 @@ def send():
 def visualize():
     TOLERANCE = int(session['tolerance'])
     
-
-    fig = Figure()
-    ax = fig.subplots()
     base_angle = random.randint(40,150 - 3 * TOLERANCE)
     
     test_angles = [base_angle,
@@ -54,7 +46,6 @@ def visualize():
     answers = np.empty_like(temp)
     answers[temp] = np.arange(len(test_angles)) + 1
     answers = list(answers)
-
 
     print()
     session['answer1'] = str(answers[0])
