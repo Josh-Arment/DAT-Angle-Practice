@@ -29,30 +29,30 @@ def visualize():
     resultOutput = 'Push Submit to check answer'
     
     if request.method == 'POST':
-        print(request)
-        if 'Submit!' in request.form:
-                        
-            userAnswers = request.form
-
-            userAnswer = [0,0,0,0]
-            smallest = int(userAnswers['smallest'])
-            userAnswer[smallest-1] = 1
-            secondSmallest = int(userAnswers['secondSmallest'])
-            userAnswer[secondSmallest-1] = 2
-            secondLargest = int(userAnswers['secondLargest'])
-            userAnswer[secondLargest-1] = 3
-            largest = int(userAnswers['largest'])
-            userAnswer[largest-1] = 4
-            
-            answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
-
+        userAnswers = request.form
+        userAnswer = [0,0,0,0]
+        smallest = int(userAnswers['smallest'])
+        userAnswer[smallest-1] = 1
+        secondSmallest = int(userAnswers['secondSmallest'])
+        userAnswer[secondSmallest-1] = 2
+        secondLargest = int(userAnswers['secondLargest'])
+        userAnswer[secondLargest-1] = 3
+        largest = int(userAnswers['largest'])
+        userAnswer[largest-1] = 4
+        answer = [int(session['smallest']), int(session['secondSmallest']), int(session['secondLargest']), int(session['largest'])]
+        
+        if 'Submit' in request.form:
             if userAnswer == answer:
                 resultOutput = 'Correct!'
             else:
-                resultOutput = 'Not quite. The correct answer is {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
+                resultOutput = 'Not quite. Push \'Show Answer\' to see the correct answer.'
+        
         elif "Change Angle Difference" in request.form:
             session.clear()
             return redirect(url_for('send'))
+        
+        elif "Show Answer" in request.form:
+            resultOutput = 'The correct answer is {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
 
         elif "Play Again (Same Angle Difference)" in request.form:
             session['plot_exists'] = None
