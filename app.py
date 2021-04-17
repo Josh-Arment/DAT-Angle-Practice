@@ -4,6 +4,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 import base64
+import os
 from io import BytesIO
 from flask_wtf import FlaskForm
 from wtforms import SelectField
@@ -91,6 +92,11 @@ def visualize():
     return render_template('game_play.html', form=form, result = resultOutput, tmpID = session['id'])
 
 def test(angles):
+    # delete png files
+    for file in os.listdir('static'):
+        if file.endswith('.png'):
+            os.remove('static/' + file)
+    
     # unpack and create angles
     angle1, angle2, angle3, angle4 = angles
     
