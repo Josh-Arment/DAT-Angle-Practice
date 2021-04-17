@@ -49,7 +49,7 @@ def visualize():
             if userAnswer == answer:
                 resultOutput = 'Correct!'
             else:
-                resultOutput = 'Wrong... {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
+                resultOutput = 'Not quite. The correct answer is {}<{}<{}<{}'.format(np.where(np.array(answer) == 1)[0][0] + 1,np.where(np.array(answer) == 2)[0][0] + 1,np.where(np.array(answer) == 3)[0][0] + 1,np.where(np.array(answer) == 4)[0][0] + 1)
         elif "Change Angle Difference" in request.form:
             session.clear()
             return redirect(url_for('send'))
